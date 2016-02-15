@@ -29,7 +29,9 @@ getInitialState() {
     renderTasks() {
         // get tasks from this.data.tasks
         return this.data.tasks.map((task) => {
-            return <Task key = {task._id} task = {task} />;
+            const currentUserId = this.data.currentUser && this.data.currentUser._id;
+            const showPrivateButton = task.owner === currentUserId;
+            return <Task key = {task._id} task = {task} showPrivateButton = {showPrivateButton}/>;
         });
     },
     // the hanlde submit
@@ -40,14 +42,7 @@ getInitialState() {
         // find the text field via the React ref
         var text = React.findDOMNode(this.refs.textInput).value.trim();
         
-        Tasks.insert({
-            text: text,
-            createdAt: new Date(), // current time
-            owner: Meteor.userId(),
-            username: Meteor.user().username // user name of logged in user
-            
-        });
-        
+        Metoer.call("addTask", text);
         //clear the form
         
         React.findDOMNode(this.refs.textInput).value =  "";
